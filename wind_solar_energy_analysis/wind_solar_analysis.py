@@ -3,8 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime
+import os
 import warnings
 warnings.filterwarnings("ignore")
+
 
 df = pd.read_csv("Energy Production Dataset.csv")
 
@@ -49,12 +51,53 @@ for spine in ax2.spines.values():
 # removing gridlines 
 ax.grid(False)
 ax2.grid(False)
-plt.tight_layout()
+fig.tight_layout()
 
 # Saving image
-# plt.savefig("Hourly_Energy_Distribution.png",
-#             dpi = 600,
-#             facecolor = 'white',
-#             bbox_inches = 'tight')
+os.path.exists('Kaggle_datasets/Hourly_Energy_Distribution.png') or fig.savefig("Hourly_Energy_Distribution.png",
+            dpi = 600,
+            facecolor = 'white',
+            bbox_inches = 'tight')
 print("Histogram Loaded")
+
+# Energy source distributition through PIe chart
+fig1, (ax1, ax2) = plt.subplots(1,2, figsize=(16,8))
+
+source_count = df['Source'].value_counts()
+pie_colors = ["#1b4965", "#62b6cb"]
+ax1.pie(
+    source_count,
+    labels=source_count.index,
+    autopct='%1.1f%%',
+    startangle=45,
+    wedgeprops={'edgecolor':'black', 'linewidth': 2},
+    colors=pie_colors,
+    textprops = {'fontsize': 14, 'weight': 'bold', 'color': 'white'}
+)
+
+ax1.set_title("Distribution by Energy Source", fontsize=20, fontweight='bold')
+
+
+source_produc = df.groupby('Source')['Production'].sum().sort_values(ascending=False)
+
+bars = ax2.bar(source_produc.index, source_produc.values, color=pie_colors, edgecolor='black', linewidth=2)
+ax2.set_title("Total Production by Energy Source", fontsize=20, fontweight='bold', pad = 20)
+ax2.set_xlabel("Energy Source", fontsize = 18, fontweight='bold')
+ax2.set_ylabel("Total Production (MWh)", fontsize = 18, fontweight='bold')
+ax2.tick_params(axis='both', labelsize=14)
+
+for bar in bars:
+    height = bar.get_height()
+    ax2.text(
+        bar.get_x() + bar.get_width()/2.,
+        height,
+        f"{height/1e6:.2f}M", va='bottom', ha='center', fontsize=12, fontweight='bold'       
+    )
+
+for spine in ax2.spines.values():
+    spine.set_edgecolor('black')
+    spine.set_linewidth(2)
+fig1.tight_layout
+os.path.exists('Kaggle_datasets/Overall_ Distribution_and_Production_chart.png') or fig1.savefig("Overall_ Distribution_and_Production_chart.png", dpi=800,bbox_inches='tight' )
+print("Overall_ Distribution_and_Production_chart loaded")
 plt.show()
