@@ -100,4 +100,44 @@ for spine in ax2.spines.values():
 fig1.tight_layout
 os.path.exists('Kaggle_datasets/Overall_ Distribution_and_Production_chart.png') or fig1.savefig("Overall_ Distribution_and_Production_chart.png", dpi=800,bbox_inches='tight' )
 print("Overall_ Distribution_and_Production_chart loaded")
+
+fig, ax = plt.subplots(figsize=(16,8))
+
+seasons_order = ['Winter', 'Summer', 'Spring', 'Fall']
+seasonal_data = df[df['Season'].isin(seasons_order)]
+
+ax.boxplot(
+    [seasonal_data[seasonal_data['Season'] == s]['Production'].values for s in seasons_order],
+    labels = seasons_order, patch_artist=True,
+    boxprops=dict(linewidth=2, edgecolor='black'),
+    whiskerprops=dict(linewidth=2, color='black'),
+    capprops=dict(color='black', linewidth=2),
+    medianprops=dict(color='red', linewidth=2),
+    flierprops=dict(marker='o', markerfacecolor='coral', markersize=6, markeredgecolor='black', linewidth=1.5)
+    )
+ax.set_title('Energy Production by Season', fontsize=20, fontweight='bold',pad=20)
+ax.set_xlabel('Season', fontsize = 16, fontweight='bold')
+ax.set_ylabel('Production (MWh)', fontsize = 16, fontweight='bold')
+ax.tick_params(axis='both', labelsize=14)
+
+for i,season in enumerate(seasons_order, 1):
+    mean_value = seasonal_data[seasonal_data['Season'] == season]["Production"].mean()
+    ax.plot(i, mean_value,
+            marker='D',
+            markersize=12,
+            color='green',
+            markeredgecolor='black',
+            markeredgewidth=1.5,
+            label='Mean' if i ==1 else ""
+            )
+
+ax.legend(frameon=True, framealpha=1, prop={'weight':'bold'},edgecolor='black', fontsize='large')
+
+for spine in ax.spines.values():
+    spine.set_edgecolor('black')
+    spine.set_linewidth(2)
+
+plt.tight_layout
+print("Production by season chart loaded")
+os.path.exists('Kaggle_datasets/Production_by_season.png') or fig.savefig("Production_by_season.png", dpi=600, bbox_inches='tight')
 plt.show()
