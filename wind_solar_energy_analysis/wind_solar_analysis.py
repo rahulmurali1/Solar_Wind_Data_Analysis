@@ -140,4 +140,32 @@ for spine in ax.spines.values():
 plt.tight_layout
 print("Production by season chart loaded")
 os.path.exists('Kaggle_datasets/Production_by_season.png') or fig.savefig("Production_by_season.png", dpi=600, bbox_inches='tight')
-plt.show()
+
+fig, ax = plt.subplots(figsize=(14,8))
+
+hourly_mean = df.groupby('Start_Hour')['Production'].agg(['mean', 'std'])
+
+ax.plot(hourly_mean.index, hourly_mean['mean'],
+        marker='o', markeredgecolor='black', markeredgewidth=1.5, markersize= 10,
+        label='Mean Production', markerfacecolor='#5e548e' )
+ax.fill_between(hourly_mean.index,
+                hourly_mean['mean']- hourly_mean['std'],
+                hourly_mean['mean']+ hourly_mean['std'],
+                facecolor='#be95c4', alpha=0.4
+                )
+
+ax.legend()
+ax.set_title('Hourly Production Patterns', fontsize=20, fontweight='bold', pad=20)
+ax.set_xlabel("Start Hour", fontsize=16, fontweight='bold')
+ax.set_ylabel("Production (MWh)", fontsize=16, fontweight='bold')
+ax.set_xticks(range(0, 24, 1))
+ax.tick_params(labelsize=14, axis='both')
+ax.grid(linewidth=0.2)
+
+for spine in ax.spines.values():
+    spine.set_edgecolor('black')
+    spine.set_linewidth(2)
+plt.tight_layout
+img = 'Hourly_Production_Pattern.png'
+os.path.exists(f'Kaggle_datasets/{img}') or fig.savefig(img)
+
