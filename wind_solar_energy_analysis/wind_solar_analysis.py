@@ -169,3 +169,31 @@ plt.tight_layout
 img = 'Hourly_Production_Pattern.png'
 os.path.exists(f'Kaggle_datasets/{img}') or fig.savefig(img)
 
+fig, ax = plt.subplots(figsize=(16,8))
+month_order = ['January', 'February', 'March', 'April', 'May', 'June',
+               'July', 'August', 'September', 'October', 'November', 'December']
+monthly_avg = df.groupby('Month_Name')['Production'].mean().reindex(month_order)
+colors = plt.cm.YlGnBu(np.linspace(0.3, 0.9, len(monthly_avg)))
+bars = ax.bar(range(len(monthly_avg)), monthly_avg.values, color=colors, edgecolor='black', linewidth=1.5)
+ax.set_title('Monthly Average Production', fontsize= 20, fontweight='bold', pad=20)
+ax.set_xlabel('Month', fontsize=16, fontweight='bold')
+ax.set_ylabel('Production (MWh)', fontsize=16, fontweight='bold')
+ax.set_xticks(range(0,12,1))
+ax.set_xticklabels([a[:3] for a in monthly_avg.index], fontsize=14, fontweight='bold')
+ax.tick_params(axis='y', labelsize=14)
+ax.grid(alpha=0.3)
+
+for bar in bars:
+    height = bar.get_height()
+    ax.text(
+        bar.get_x() + bar.get_width()/2.,height, f'{height:.0f}',
+        ha='center', va='bottom', fontweight='bold'
+    )
+
+for spine in ax.spines.values():
+    spine.set_edgecolor('black')
+    spine.set_linewidth(2)
+
+plt.tight_layout
+img = "Monthly_average_production.png"
+os.path.exists(f'Kaggle_datasets/{img}') or fig.savefig(img, dpi=600)
