@@ -252,3 +252,31 @@ img='Avg_hr_prod_pattern.png'
 print('AVG Hourly Production pattern by Source loaded')
 plt.tight_layout()
 os.path.exists(f'Kaggle_datasets/{img}') or fig.savefig(img, dpi=600)
+
+fig,ax = plt.subplots(figsize=(16,8))
+month_order = ['January', 'February', 'March', 'April', 'May', 'June',
+               'July', 'August', 'September', 'October', 'November', 'December']
+heatmap_data = df.pivot_table(values='Production', index='Start_Hour', columns='Month_Name', aggfunc='mean')
+heatmap_data=heatmap_data[month_order]
+
+im_chart = ax.imshow(heatmap_data.values, cmap='YlGnBu', aspect='auto', origin='lower')
+ax.set_title('Production Heatmap Hour vs Month', fontsize=20, fontweight='bold', pad=20)
+ax.set_xlabel('Month', fontsize=16, fontweight='bold')
+ax.set_ylabel('Hour', fontsize=16, fontweight='bold')
+ax.set_xticks(range(len(month_order)))
+ax.set_yticks(range(2,24,2))
+ax.set_xticklabels([a[:3] for a in month_order], fontsize=14, fontweight='bold')
+ax.set_yticklabels(range(2,24,2), fontsize=14, fontweight='bold')
+
+cbar = plt.colorbar(im_chart, ax=ax, pad=0.2)
+cbar.set_label('Production(MWh)', fontsize=14, fontweight='bold')
+cbar.ax.tick_params(labelsize=14)
+
+for spine in ax.spines.values():
+    spine.set_edgecolor('black')
+    spine.set_linewidth(2)
+img = 'Production_heatmap.png'
+plt.tight_layout()
+os.path.exists(f'Kaggle_datasets/{img}')or fig.savefig(img, dpi=600)
+plt.show()
+
