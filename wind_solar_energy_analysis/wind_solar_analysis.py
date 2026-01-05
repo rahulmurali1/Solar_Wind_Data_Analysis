@@ -166,6 +166,7 @@ for spine in ax.spines.values():
     spine.set_edgecolor('black')
     spine.set_linewidth(2)
 plt.tight_layout
+print("Hourly production pattern chart loaded")
 img = 'Hourly_Production_Pattern.png'
 os.path.exists(f'Kaggle_datasets/{img}') or fig.savefig(img)
 
@@ -195,5 +196,36 @@ for spine in ax.spines.values():
     spine.set_linewidth(2)
 
 plt.tight_layout
+print("Monthly average produciton chart loaded")
 img = "Monthly_average_production.png"
 os.path.exists(f'Kaggle_datasets/{img}') or fig.savefig(img, dpi=600)
+
+
+fig, ax = plt.subplots(figsize=(16,8))
+
+days_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+days_avg = df.groupby('Day_Name')['Production'].agg(['mean','std']).reindex(days_order)
+colors_day = plt.cm.YlGnBu(np.linspace(0.3, 0.9, len(days_avg)))
+
+bars = ax.bar(range(len(days_order)), days_avg['mean'].values,
+              yerr = days_avg['std'].values,
+              color=colors_day, edgecolor='black', linewidth=1.5,
+              error_kw={'elinewidth': 1.5},
+              capsize=10)
+
+ax.set_title('Daily Avg Production', fontsize=20, fontweight='bold', pad=20)
+ax.set_xlabel('Day of Week', fontsize=16, fontweight='bold')
+ax.set_ylabel('Production (MWh)', fontsize=16, fontweight='bold')
+ax.set_xticks(range(len(days_order)))
+ax.set_xticklabels([a[:3] for a in days_avg.index], fontsize=14, fontweight='bold')
+ax.tick_params(axis='y', labelsize=14)
+
+for spine in ax.spines.values():
+    spine.set_edgecolor('black')
+    spine.set_linewidth(2)
+
+plt.tight_layout
+print("Daywise avg prod chart loaded")
+img = 'Daily avg production.png'
+os.path.exists(f'Kaggle_datasets/{img}') or fig.savefig(img, dpi=600)
+
