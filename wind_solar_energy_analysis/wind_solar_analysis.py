@@ -97,7 +97,7 @@ for bar in bars:
 for spine in ax2.spines.values():
     spine.set_edgecolor('black')
     spine.set_linewidth(2)
-fig1.tight_layout
+fig1.tight_layout()
 os.path.exists('Kaggle_datasets/Overall_ Distribution_and_Production_chart.png') or fig1.savefig("Overall_ Distribution_and_Production_chart.png", dpi=800,bbox_inches='tight' )
 print("Overall_ Distribution_and_Production_chart loaded")
 
@@ -137,7 +137,7 @@ for spine in ax.spines.values():
     spine.set_edgecolor('black')
     spine.set_linewidth(2)
 
-plt.tight_layout
+plt.tight_layout()
 print("Production by season chart loaded")
 os.path.exists('Kaggle_datasets/Production_by_season.png') or fig.savefig("Production_by_season.png", dpi=600, bbox_inches='tight')
 
@@ -165,7 +165,7 @@ ax.grid(linewidth=0.2)
 for spine in ax.spines.values():
     spine.set_edgecolor('black')
     spine.set_linewidth(2)
-plt.tight_layout
+plt.tight_layout()
 print("Hourly production pattern chart loaded")
 img = 'Hourly_Production_Pattern.png'
 os.path.exists(f'Kaggle_datasets/{img}') or fig.savefig(img)
@@ -195,7 +195,7 @@ for spine in ax.spines.values():
     spine.set_edgecolor('black')
     spine.set_linewidth(2)
 
-plt.tight_layout
+plt.tight_layout()
 print("Monthly average produciton chart loaded")
 img = "Monthly_average_production.png"
 os.path.exists(f'Kaggle_datasets/{img}') or fig.savefig(img, dpi=600)
@@ -224,8 +224,31 @@ for spine in ax.spines.values():
     spine.set_edgecolor('black')
     spine.set_linewidth(2)
 
-plt.tight_layout
+plt.tight_layout()
 print("Daywise avg prod chart loaded")
 img = 'Daily avg production.png'
 os.path.exists(f'Kaggle_datasets/{img}') or fig.savefig(img, dpi=600)
 
+fig, ax = plt.subplots(figsize=(16,8))
+
+Prod_source = ['Wind', 'Solar']
+color_source= {'Wind':'#FFAAB8', 'Solar': '#A8DF8E'}
+
+for source in Prod_source:
+    avg_source = df[df['Source']==source].groupby('Start_Hour')['Production'].mean()
+    ax.plot(avg_source.index, avg_source.values, linewidth=2.5, marker='o', markeredgecolor='black', markeredgewidth=1.5, label=source, color=color_source[source])
+
+ax.set_title('AVG Hourly Production pattern by Source', fontsize=20, fontweight='bold', pad=20)
+ax.set_xlabel('Hours of Day', fontsize=14, fontweight='bold')
+ax.set_ylabel('Production (MWh)', fontsize=14, fontweight='bold')
+ax.set_xticks(range(0,24,2))
+ax.tick_params(axis='both', labelsize=14)
+ax.legend()
+
+for spine in ax.spines.values():
+    spine.set_edgecolor('black')
+    spine.set_linewidth(2)
+img='Avg_hr_prod_pattern.png'
+print('AVG Hourly Production pattern by Source loaded')
+plt.tight_layout()
+os.path.exists(f'Kaggle_datasets/{img}') or fig.savefig(img, dpi=600)
