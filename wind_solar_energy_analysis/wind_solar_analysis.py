@@ -323,5 +323,31 @@ for spine in ax2.spines.values():
 plt.tight_layout()
 img='Production_variability.png'
 os.path.exists(f'Kaggle_datasets/{img}') or fig.savefig(img, dpi=600)
+
+fig, ax = plt.subplots(figsize=(16,8))
+df['Date_Time'] = pd.to_datetime(df['Date'])
+daily_prod = df.groupby('Date_Time')['Production'].sum().sort_index()
+cum_prod = daily_prod.cumsum()
+
+ax.plot(range(len(cum_prod)), cum_prod.values, linewidth=2, color='blue', label='cummulative production')
+ax.fill_between(range(len(cum_prod)), cum_prod.values, color='purple', alpha=0.3)
+
+ax.set_title('Cummulative Production', fontsize= 20, fontweight='bold', pad=20)
+ax.set_xlabel('Days', fontsize=16, fontweight='bold')
+ax.set_ylabel('Production (MWh)', fontsize=16, fontweight='bold')
+num_ticks = 8
+x_ticks = np.linspace(0 , len(cum_prod)-1, num_ticks, dtype=int)
+x_labels = [daily_prod.index[i].strftime('%m-%Y') for i in x_ticks]
+ax.set_xticks(x_ticks)
+ax.set_xticklabels(x_labels, fontsize=12, fontweight='bold', rotation=45)
+ax.legend(loc='upper left', frameon=True)
+for spine in ax.spines.values():
+    spine.set_edgecolor('black')
+    spine.set_linewidth(2)
+
+plt.tight_layout()
+img ='Cumulative_prod.png'
+print("Cumulative production chart")
+os.path.exists(f'Kaggle_datasets/{img}') or fig.savefig(img, dpi = 600)
 plt.show()
 
