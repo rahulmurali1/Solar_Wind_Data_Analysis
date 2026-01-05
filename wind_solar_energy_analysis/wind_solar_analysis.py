@@ -278,5 +278,50 @@ for spine in ax.spines.values():
 img = 'Production_heatmap.png'
 plt.tight_layout()
 os.path.exists(f'Kaggle_datasets/{img}')or fig.savefig(img, dpi=600)
+
+fig, (ax, ax2) = plt.subplots(1,2,figsize=(16,8))
+
+seasons_order=['Winter', 'Spring', 'Summer', 'Fall']
+cv_value=[]
+cv_color= plt.cm.plasma(np.linspace(0.2,0.8,len(seasons_order)))
+
+for season in seasons_order:
+    season_data = df[df['Season'] == season]['Production']
+    cv = (season_data.std()/ season_data.mean()) * 100
+    cv_value.append(cv)
+
+bar1 = ax.bar(seasons_order, cv_value, edgecolor='black', linewidth=2, color = cv_color)
+
+ax.set_title('Production variability by season', fontsize = 18, fontweight='bold')
+ax.set_xlabel('Seasons', fontsize = 16, fontweight='bold')
+ax.set_ylabel('Coefficient of Variation %', fontsize=16, fontweight='bold')
+ax.tick_params(axis = 'both', labelsize =12 )
+
+for bar in bar1:
+    height = bar.get_height()
+    ax.text(bar.get_x() + bar.get_width()/2, height, f"{height:.1f}%", va='bottom', ha='center', fontweight='bold', fontsize=12)
+
+source_std = df.groupby('Source')['Production'].std().sort_values(ascending=False)
+colors = ['#5e548e', '#9f86c0']
+bar2 = ax2.bar(source_std.index, source_std.values, linewidth=2, edgecolor='black', color=colors[:len(source_std)])
+ax2.set_title('Production variability by Source', fontsize=18, fontweight='bold')
+ax2.set_xlabel('Source', fontsize=16, fontweight='bold')
+ax2.set_ylabel('Standard Deviation', fontsize=16, fontweight='bold')
+ax2.tick_params(axis='both', labelsize=12)
+
+for bar in bar2:
+    height = bar.get_height()
+    ax2.text(bar.get_x()+bar.get_width()/2., height, f'{height:.0f}', va='bottom',ha='center', fontweight='bold', fontsize=12)
+
+for spine in ax2.spines.values():
+    spine.set_edgecolor('black')
+    spine.set_linewidth(2)
+for spine in ax2.spines.values():
+    spine.set_edgecolor('black')
+    spine.set_linewidth(2)
+
+plt.tight_layout()
+img='Production_variability.png'
+os.path.exists(f'Kaggle_datasets/{img}') or fig.savefig(img, dpi=600)
 plt.show()
 
